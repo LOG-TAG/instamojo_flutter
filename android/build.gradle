@@ -1,0 +1,84 @@
+group 'com.kushal.instamojo_flutter'
+version '1.0'
+
+buildscript {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.0'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+        maven {
+            url 'https://s3-ap-southeast-1.amazonaws.com/jp-build-packages/ec-android-sdk'
+        }
+        maven {
+            url 'https://s3-ap-southeast-1.amazonaws.com/godel-release/godel/'
+        }
+
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 16
+        vectorDrawables.useSupportLibrary = true
+        consumerProguardFiles 'proguard-rules.pro'
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude '.readme'
+    }
+    lintOptions {
+        abortOnError true
+        ignoreWarnings false
+        textReport true
+        textOutput 'stdout'
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles 'proguard-rules.pro'
+        }
+        debug {
+            debuggable true
+            testCoverageEnabled true
+        }
+    }
+
+}
+
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    api fileTree(include: ['*.jar'], dir: 'libs')
+    api 'com.rengwuxian.materialedittext:library:2.1.4'
+    implementation 'in.juspay:ec-android-sdk:1.2.4'
+    api 'com.squareup.retrofit2:retrofit:2.5.0'
+    api 'com.squareup.retrofit2:converter-gson:2.5.0'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'pl.pragmatists:JUnitParams:1.1.1'
+}
+
+//apply from: 'install.gradle'
+//apply from: 'bintray.gradle'
+//apply from: 'coverage.gradle'
