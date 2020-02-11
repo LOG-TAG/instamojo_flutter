@@ -35,14 +35,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * InstamojoFlutterPlugin
  */
 public class InstamojoFlutterPlugin extends Activity implements FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler, Instamojo.InstamojoPaymentCallback {
+    public static String serverUrl = "https://instamojoflutter.herokuapp.com/access_token.php/";
     private Context applicationContext;
     private MethodChannel methodChannel;
     private EventChannel eventChannel;
-
     private MyBackendService myBackendService;
     private AlertDialog dialog;
     private Instamojo.Environment mCurrentEnv = Instamojo.Environment.TEST;
     private Result finalResult;
+
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final HashMap<Instamojo.Environment, String> env_options = new HashMap<>();
@@ -97,8 +98,9 @@ public class InstamojoFlutterPlugin extends Activity implements FlutterPlugin, M
             Instamojo.getInstance().initialize(applicationContext,((boolean) call.argument("isProduction")) ? Instamojo.Environment.PRODUCTION : Instamojo.Environment.TEST);
 
             // Initialize the backend service client
+            String baseUrl =  call.argument("baseUrl").toString();
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://sample-sdk-server.instamojo.com")
+                    .baseUrl(baseUrl)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             myBackendService = retrofit.create(MyBackendService.class);

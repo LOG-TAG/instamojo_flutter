@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - instamojo_flutter (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - instamojo_flutter (from `.symlinks/plugins/instamojo_flutter/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  instamojo_flutter:
+    :path: ".symlinks/plugins/instamojo_flutter/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  instamojo_flutter: 820a65bad9e6a1583f50678d998641fbf69f97a8
+
+PODFILE CHECKSUM: 083258d7f5e80b42ea9bfee905fe93049bc04c64
+
+COCOAPODS: 1.8.4

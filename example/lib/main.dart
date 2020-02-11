@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -25,15 +24,20 @@ class _MyAppState extends State<MyApp> {
     String paymentResponse;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
-      String orderId = await InstamojoFlutter.createOrder(name: "Kushal", email: "kushalmahapatro@gmail.com", mobileNumber: "9692968333", amount: "8333", description: "test payment", isProduction: false);
-      if(orderId!= null) {
+      String orderId = await InstamojoFlutter.createOrder(
+        baseUrl: "http://10.0.2.2:8080",
+          name: "Kushal",
+          email: "kushalmahapatro@gmail.com",
+          mobileNumber: "9692968333",
+          amount: "8333",
+          description: "test payment",
+          isProduction: false);
+      if (orderId != null) {
         print("OrderId : $orderId");
         Future.delayed(Duration(seconds: 10));
         paymentResponse = await InstamojoFlutter.startPayment(orderId: orderId);
         print("Payment : $paymentResponse");
-
       }
-
     } on PlatformException {
       paymentResponse = 'Failed to make payment.';
     }
@@ -63,12 +67,13 @@ class _MyAppState extends State<MyApp> {
                 child: Container(
                   child: Text("Make Payment"),
                 ),
-                onPressed: (){
+                onPressed: () {
                   initPlatformState();
                 },
               ),
-
-              SizedBox(height: 20,),
+              SizedBox(
+                height: 20,
+              ),
               Text("Response: $_paymentResponse"),
             ],
           ),
@@ -78,6 +83,6 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-print(String message){
+print(String message) {
   debugPrint(message);
 }

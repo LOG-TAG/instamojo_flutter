@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements Instamojo.Instamo
 
         // Initialize the backend service client
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://sample-sdk-server.instamojo.com")
+                .baseUrl("http://206.189.138.85:8080")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         myBackendService = retrofit.create(MyBackendService.class);

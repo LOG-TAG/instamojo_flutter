@@ -1,6 +1,7 @@
 library instamojo_flutter;
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 class InstamojoFlutter {
@@ -18,7 +19,8 @@ class InstamojoFlutter {
       String mobileNumber,
       String amount,
       String description,
-      bool isProduction}) async {
+      bool isProduction,
+     @required String baseUrl}) async {
     final String orderId = await _channel.invokeMethod(
       'createOrder',
       <String, dynamic>{
@@ -28,6 +30,7 @@ class InstamojoFlutter {
         'mobileNumber':mobileNumber,
         'amount':amount,
         'description':description,
+        'baseUrl': baseUrl,
       },
     );
     return orderId;
