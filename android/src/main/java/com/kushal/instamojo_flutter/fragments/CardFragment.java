@@ -2,6 +2,9 @@ package com.kushal.instamojo_flutter.fragments;
 
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,9 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 
 import com.kushal.instamojo_flutter.R;
@@ -174,6 +179,9 @@ public class CardFragment extends BaseFragment implements View.OnClickListener {
         });
 
         Button checkOutButton = view.findViewById(R.id.checkout);
+        if(BaseActivity.actionBarColor != ""){
+            checkOutButton.setBackgroundColor(Color.parseColor(BaseActivity.actionBarColor));
+        }
         String checkoutText = "Pay ₹" + parentActivity.getOrder().getOrder().getAmount();
         checkOutButton.setText(checkoutText);
         checkOutButton.setOnClickListener(this);
@@ -216,6 +224,7 @@ public class CardFragment extends BaseFragment implements View.OnClickListener {
         cvvBox.setEnabled(enable);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void prepareCheckOut() {
         if (!isEditBoxesValid(editTexts)) {
             return;
@@ -247,6 +256,7 @@ public class CardFragment extends BaseFragment implements View.OnClickListener {
         checkOut(card);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void checkOut(Card card) {
         parentActivity.hideKeyboard();
         changeEditBoxesState(false);
@@ -255,6 +265,9 @@ public class CardFragment extends BaseFragment implements View.OnClickListener {
         builder.setView(R.layout.please_wait_dialog_instamojo);
         final AlertDialog dialog = builder.create();
         dialog.show();
+        if(BaseActivity.actionBarColor != "")
+        ((ProgressBar)dialog.findViewById(R.id.progress)).setIndeterminateTintList(ColorStateList.valueOf(Color.parseColor(BaseActivity.actionBarColor)));
+
 
         final GatewayOrder order = parentActivity.getOrder();
         Map<String, String> cardPaymentRequest = ObjectMapper.populateCardRequest(order, card,

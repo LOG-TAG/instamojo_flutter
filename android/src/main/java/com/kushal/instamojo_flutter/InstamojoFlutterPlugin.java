@@ -9,6 +9,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
+import com.google.gson.JsonObject;
+import com.kushal.instamojo_flutter.activities.BaseActivity;
 import com.kushal.instamojo_flutter.helpers.Constants;
 
 import org.json.JSONException;
@@ -35,7 +37,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * InstamojoFlutterPlugin
  */
 public class InstamojoFlutterPlugin extends Activity implements FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler, Instamojo.InstamojoPaymentCallback {
-    public static String serverUrl = "https://instamojoflutter.herokuapp.com/access_token.php/";
     private Context applicationContext;
     private MethodChannel methodChannel;
     private EventChannel eventChannel;
@@ -45,7 +46,7 @@ public class InstamojoFlutterPlugin extends Activity implements FlutterPlugin, M
     private Result finalResult;
 
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = InstamojoFlutterPlugin.class.getSimpleName();
     private static final HashMap<Instamojo.Environment, String> env_options = new HashMap<>();
 
     static {
@@ -60,8 +61,6 @@ public class InstamojoFlutterPlugin extends Activity implements FlutterPlugin, M
     private void onAttachedToEngine(Context applicationContext, BinaryMessenger messenger) {
         this.applicationContext = applicationContext;
         methodChannel = new MethodChannel(messenger, "instamojo_flutter");
-        eventChannel = new EventChannel(messenger, "plugins.flutter.io/charging");
-        eventChannel.setStreamHandler(this);
         methodChannel.setMethodCallHandler(this);
     }
 
@@ -70,20 +69,9 @@ public class InstamojoFlutterPlugin extends Activity implements FlutterPlugin, M
         applicationContext = null;
         methodChannel.setMethodCallHandler(null);
         methodChannel = null;
-        eventChannel.setStreamHandler(null);
-        eventChannel = null;
     }
 
 
-    // This static function is optional and equivalent to onAttachedToEngine. It supports the old
-    // pre-Flutter-1.12 Android projects. You are encouraged to continue supporting
-    // plugin registration via this function while apps migrate to use the new Android APIs
-    // post-flutter-1.12 via https://flutter.dev/go/android-project-migration.
-    //
-    // It is encouraged to share logic between onAttachedToEngine and registerWith to keep
-    // them functionally equivalent. Only one of onAttachedToEngine or registerWith will be called
-    // depending on the user's project. onAttachedToEngine or registerWith must both be defined
-    // in the same class.
     public static void registerWith(Registrar registrar) {
         final InstamojoFlutterPlugin instance = new InstamojoFlutterPlugin();
         instance.onAttachedToEngine(registrar.context(), registrar.messenger());
@@ -92,13 +80,23 @@ public class InstamojoFlutterPlugin extends Activity implements FlutterPlugin, M
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
         finalResult = result;
-        if (call.method.equals("getPlatformVersixon")) {
-            result.success("Android " + android.os.Build.VERSION.RELEASE);
+        if (call.method.equals("setActionBarColor")) {
+            BaseActivity.actionBarColor = call.argument("color");
+            BaseActivity.actionBarTextColor = call.argument("actionBarTextColor");
         } else if (call.method.equals("createOrder")) {
-            Instamojo.getInstance().initialize(applicationContext,((boolean) call.argument("isProduction")) ? Instamojo.Environment.PRODUCTION : Instamojo.Environment.TEST);
+            if((boolean) call.argument("isProduction")){
+                mCurrentEnv =Instamojo.Environment.PRODUCTION;
+                Instamojo.getInstance().initialize(applicationContext, Instamojo.Environment.PRODUCTION);
 
-            // Initialize the backend service client
+            }else{
+                mCurrentEnv =Instamojo.Environment.TEST;
+                Instamojo.getInstance().initialize(applicationContext, Instamojo.Environment.TEST);
+
+            }
+
+//             Initialize the backend service client
             String baseUrl =  call.argument("baseUrl").toString();
+//            String baseUrl =  "http://127.0.0.1:8333/";
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(baseUrl)
                     .addConverterFactory(GsonConverterFactory.create())
@@ -109,6 +107,7 @@ public class InstamojoFlutterPlugin extends Activity implements FlutterPlugin, M
 
         } else if(call.method.endsWith("startPayment")){
             initiateSDKPayment(call.argument("orderId").toString());
+//            initiateSDKPayment("670e0c9c-0d9f-4c30-aff3-60a68d32714e");
         }
         else {
             result.notImplemented();
@@ -173,20 +172,50 @@ public class InstamojoFlutterPlugin extends Activity implements FlutterPlugin, M
     @Override
     public void onInstamojoPaymentComplete(String orderID, String transactionID, String paymentID, String paymentStatus) {
         Log.d(TAG, "Payment complete");
-        showToast("Payment complete. Order ID: " + orderID + ", Transaction ID: " + transactionID
-                + ", Payment ID:" + paymentID + ", Status: " + paymentStatus);
+        JSONObject object = new JSONObject();
+        try {
+            object.put("statusCode" ,"200");
+            object.put("response" ,"Payment complete");
+            object.put("order_id" ,orderID);
+            object.put("transaction_id" ,transactionID);
+            object.put("payment_id" ,paymentID);
+            object.put("status" ,paymentStatus);
+            showToast(object.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            showToast(e.toString());
+
+        }
+
+
     }
 
     @Override
     public void onPaymentCancelled() {
         Log.d(TAG, "Payment cancelled");
-        showToast("Payment cancelled by user");
+        JSONObject object = new JSONObject();
+        try {
+            object.put("statusCode" ,"201");
+            object.put("response" ,"Payment cancelled by user");
+            showToast(object.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            showToast(e.toString());
+        }
     }
 
     @Override
     public void onInitiatePaymentFailure(String errorMessage) {
         Log.d(TAG, "Initiate payment failed");
-        showToast("Initiating payment failed. Error: " + errorMessage);
+        JSONObject object = new JSONObject();
+        try {
+            object.put("statusCode" ,"500");
+            object.put("response" ,"Initiating payment failed. Error: " + errorMessage);
+            showToast(object.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+            showToast(e.toString());
+        }
     }
 
     private void showToast(final String message) {

@@ -4,13 +4,29 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.kushal.instamojo_flutter.Instamojo;
@@ -40,10 +56,14 @@ public class PaymentDetailsActivity extends BaseActivity {
     private SearchView.OnQueryTextListener onQueryTextListener;
     private String hintText;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment_details_instamojo);
+        if(BaseActivity.actionBarColor != ""){
+            ((ProgressBar)findViewById(R.id.progress_bar)).setIndeterminateTintList(ColorStateList.valueOf(Color.parseColor(BaseActivity.actionBarColor)));
+        }
         inflateXML();
 
         String orderID = getIntent().getStringExtra(Constants.ORDER_ID);

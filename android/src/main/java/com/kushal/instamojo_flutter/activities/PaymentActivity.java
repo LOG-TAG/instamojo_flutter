@@ -1,9 +1,21 @@
 package com.kushal.instamojo_flutter.activities;
 
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.kushal.instamojo_flutter.R;
 import com.kushal.instamojo_flutter.fragments.JuspaySafeBrowser;
@@ -31,7 +43,7 @@ public class PaymentActivity extends BaseActivity {
     }
 
     private void inflateXML() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        updateActionBar();
 //        setSupportActionBar(toolbar);
         Logger.d(TAG, "Inflated XML");
     }

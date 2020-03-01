@@ -55,7 +55,7 @@ public class UPIFragment extends BaseFragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_upi_instamojo, container, false);
-        parentActivity = (PaymentDetailsActivity) getActivity();
+//        parentActivity = getActivity()  ;
         inflateXML(view);
         return view;
     }

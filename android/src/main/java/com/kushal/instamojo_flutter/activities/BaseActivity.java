@@ -3,16 +3,31 @@ package com.kushal.instamojo_flutter.activities;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
+import com.kushal.instamojo_flutter.R;
 import com.kushal.instamojo_flutter.helpers.Logger;
 
 import java.lang.reflect.Method;
+
+import io.flutter.embedding.android.FlutterActivity;
 
 /**
  * Base Activity to all the Activities in the SDK.
@@ -23,6 +38,8 @@ import java.lang.reflect.Method;
 public abstract class BaseActivity extends AppCompatActivity {
 
     private static final String TAG = BaseActivity.class.getSimpleName();
+    public static String actionBarColor = "";
+    public static String actionBarTextColor = "";
 
     @SuppressWarnings("unchecked")
     @Override
@@ -100,9 +117,26 @@ public abstract class BaseActivity extends AppCompatActivity {
             return;
         }
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(false);
+        getSupportActionBar().setDisplayShowCustomEnabled(false);
+        if(BaseActivity.actionBarColor != "") {
+            getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor(BaseActivity.actionBarColor)));
+            int titleId = getResources().getIdentifier("action_bar_title", "id", "android");
+            if(BaseActivity.actionBarTextColor != "") {
+                Spannable text = new SpannableString(getSupportActionBar().getTitle());
+                text.setSpan(new ForegroundColorSpan(Color.parseColor(BaseActivity.actionBarTextColor)), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                getSupportActionBar().setTitle(text);
+                Drawable upArrow = ContextCompat.getDrawable(this, R.drawable.ic_arrow_back_black_24dp);
+                upArrow.setColorFilter(Color.parseColor(BaseActivity.actionBarTextColor), PorterDuff.Mode.SRC_ATOP);
+                getSupportActionBar().setHomeAsUpIndicator(upArrow);
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Window window = getWindow();
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                window.setStatusBarColor(Color.parseColor(BaseActivity.actionBarColor));
+            }
+        }
     }
 
     /**
@@ -111,7 +145,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * @param title - title to be set to current activity's actionbar
      */
     public void updateActionBarTitle(@StringRes int title) {
-        if (getSupportActionBar() == null) {
+        if (getActionBar() == null) {
             return;
         }
         Logger.d(TAG, "Setting title for Toolbar");

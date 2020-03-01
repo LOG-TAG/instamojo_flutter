@@ -2,6 +2,7 @@ library instamojo_flutter;
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class InstamojoFlutter {
@@ -45,5 +46,48 @@ class InstamojoFlutter {
       },
     );
     return paymentResponse;
+  }
+
+  static Future<String> createOrderAndStartPayment(
+      {String name,
+        String email,
+        String mobileNumber,
+        String amount,
+        String description,
+        bool isProduction,
+        @required String baseUrl}) async {
+    final String response = await _channel.invokeMethod(
+      'createOrderAndStartPayment',
+      <String, dynamic>{
+        'isProduction': isProduction,
+        'name': name,
+        'email': email,
+        'mobileNumber':mobileNumber,
+        'amount':amount,
+        'description':description,
+        'baseUrl': baseUrl,
+      },
+    );
+    return response;
+  }
+
+  static Future<String> setActionBarColor(
+      {String color, String actionBarTextColor}) async {
+    final String paymentResponse = await _channel.invokeMethod(
+      'setActionBarColor',
+      <String, dynamic>{
+        'color': color,
+        'actionBarTextColor': actionBarTextColor,
+      },
+    );
+    return paymentResponse;
+  }
+
+ static getHexMaterialColor(MaterialColor color){
+    return '#${color.value.toRadixString(16)}';
+  }
+
+  static getHexColor(Color color){
+    return '#${color.value.toRadixString(16)}';
   }
 }
