@@ -36,13 +36,14 @@ class InstamojoFlutter {
     );
     return orderId;
   }
-
+  
   static Future<String> startPayment(
-      {String orderId}) async {
+      {String orderId, bool isProduction = false}) async {
     final String paymentResponse = await _channel.invokeMethod(
       'startPayment',
       <String, dynamic>{
         'orderId': orderId,
+        'isProduction': isProduction,
       },
     );
     return paymentResponse;
