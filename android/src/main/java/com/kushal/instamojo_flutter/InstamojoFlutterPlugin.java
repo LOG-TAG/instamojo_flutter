@@ -105,9 +105,22 @@ public class InstamojoFlutterPlugin extends Activity implements FlutterPlugin, M
 
             createOrderOnServer(call, result);
 
-        } else if(call.method.endsWith("startPayment")){
+//         } else if(call.method.endsWith("startPayment")){
+//             initiateSDKPayment(call.argument("orderId").toString());
+// //            initiateSDKPayment("670e0c9c-0d9f-4c30-aff3-60a68d32714e");
+//         }
+        } else if (call.method.equals("startPayment")) {
+                if ((boolean) call.argument("isProduction")) {
+                    mCurrentEnv = Instamojo.Environment.PRODUCTION;
+                    Instamojo.getInstance().initialize(applicationContext, Instamojo.Environment.PRODUCTION);
+
+                } else {
+                    mCurrentEnv = Instamojo.Environment.TEST;
+                    Instamojo.getInstance().initialize(applicationContext, Instamojo.Environment.TEST);
+
+                }
             initiateSDKPayment(call.argument("orderId").toString());
-//            initiateSDKPayment("670e0c9c-0d9f-4c30-aff3-60a68d32714e");
+            // initiateSDKPayment("670e0c9c-0d9f-4c30-aff3-60a68d32714e");
         }
         else {
             result.notImplemented();
